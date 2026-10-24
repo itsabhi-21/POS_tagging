@@ -1,0 +1,1 @@
+"""HMM + Viterbi part-of-speech tagger for the UD English EWT treebank."""
