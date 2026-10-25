@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hmm-tagger"
+version = "0.1.0"
+description = "HMM + Viterbi POS tagger for the UD English EWT treebank"
+requires-python = ">=3.9"
+dependencies = ["numpy", "conllu", "scikit-learn"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: tests that download and train on the full dataset"]
