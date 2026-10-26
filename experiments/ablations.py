@@ -91,3 +91,26 @@ for k in [0, 1e-6, 1e-3, 1e-1, 1, 10]:
     row = {"k_emit": k, "sentences_without_valid_path": int(no_path), **evaluate(pred, dev, model.train_words)}
     results["smoothing_ablation"].append(row)
     print(row)
+
+# ---------- 4. Learning curve (dev set) ----------
+results["learning_curve"] = []
+for frac in [0.1, 0.25, 0.5, 1.0]:
+    subset = random.Random(SEED).sample(train, int(frac * len(train)))
+    row = {"fraction": frac, "train_sentences": len(subset)}
+    for name, shape in [("v1", False), ("v2", True)]:
+        model = HMMTagger(shape_unk=shape).fit(subset)
+        row[name] = evaluate(model.predict_many(dev), dev, model.train_words)["accuracy"]
+    results["learning_curve"].append(row)
+    print(row)
+
+plt.figure(figsize=(6, 4))
+fr = [r["fraction"] * 100 for r in results["learning_curve"]]
+plt.plot(fr, [r["v1"] * 100 for r in results["learning_curve"]], "o-", label="HMM v1")
+plt.plot(fr, [r["v2"] * 100 for r in results["learning_curve"]], "o-", label="HMM v2")
+plt.xlabel("Training data used (%)")
+plt.ylabel("Dev accuracy (%)")
+plt.title("Learning curve")
+plt.legend()
+plt.tight_layout()
+plt.savefig("figures/learning_curve.png", dpi=150)
+plt.close()
