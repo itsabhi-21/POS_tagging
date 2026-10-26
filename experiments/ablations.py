@@ -35,3 +35,23 @@ v2 = HMMTagger(shape_unk=True).fit(train)
 for name, model in [("v1", v1), ("v2", v2)]:
     pred = model.predict_many(test)
     print(name, "test", evaluate(pred, test, model.train_words))
+
+# ---------- 1. Most-frequent-tag baseline ----------
+tag_by_word = defaultdict(Counter)
+for s in train:
+    for w, t in s:
+        tag_by_word[w.lower()][t] += 1
+overall_tag = Counter(t for s in train for _, t in s).most_common(1)[0][0]    # fallback for unseen words
+
+
+def mft_predict(sentences):
+    return [[tag_by_word[w.lower()].most_common(1)[0][0] if w.lower() in tag_by_word else overall_tag
+             for w, _ in s] for s in sentences]
+
+
+results["mft_baseline"] = {
+    "fallback_tag": overall_tag,
+    "dev": evaluate(mft_predict(dev), dev, v1.train_words),
+    "test": evaluate(mft_predict(test), test, v1.train_words),
+}
+print("MFT baseline:", results["mft_baseline"])
