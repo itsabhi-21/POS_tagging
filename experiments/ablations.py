@@ -130,3 +130,21 @@ lo, hi = np.percentile(diff, [2.5, 97.5])
 results["bootstrap_v2_minus_v1"] = {"mean_diff": float(diff.mean()), "ci95_low": float(lo), "ci95_high": float(hi),
                                     "excludes_zero": bool(lo > 0 or hi < 0)}
 print(results["bootstrap_v2_minus_v1"])
+
+# ---------- 6. Summary figure and saved results ----------
+labels = ["Most-frequent\ntag", "v1\ngreedy", "v1\nViterbi", "v2\ngreedy", "v2\nViterbi"]
+g = results["greedy_vs_viterbi"]
+values = [results["mft_baseline"]["test"]["accuracy"], g["v1"]["greedy_test"]["accuracy"],
+          g["v1"]["viterbi_test"]["accuracy"], g["v2"]["greedy_test"]["accuracy"], g["v2"]["viterbi_test"]["accuracy"]]
+plt.figure(figsize=(7, 4))
+plt.bar(labels, [v * 100 for v in values], color=["#bbbbbb", "#9bb7d4", "#5b88b8", "#6aa88f", "#1f6f54"])
+plt.ylim(min(values) * 100 - 5, 100)
+plt.ylabel("Test accuracy (%)")
+plt.title("Baselines and decoding methods")
+plt.tight_layout()
+plt.savefig("figures/ablation_summary.png", dpi=150)
+plt.close()
+
+with open("results/ablations.json", "w") as f:
+    json.dump(results, f, indent=2)
+print("Saved results/ablations.json and the two figures")

@@ -1,0 +1,121 @@
+{
+  "mft_baseline": {
+    "fallback_tag": "NOUN",
+    "dev": {
+      "accuracy": 0.861181803721966,
+      "unknown_accuracy": 0.2962529274004684
+    },
+    "test": {
+      "accuracy": 0.8616003825615685,
+      "unknown_accuracy": 0.2858660998937301
+    }
+  },
+  "greedy_vs_viterbi": {
+    "v1": {
+      "greedy_dev": {
+        "accuracy": 0.8742643550182917,
+        "unknown_accuracy": 0.5087822014051522
+      },
+      "viterbi_dev": {
+        "accuracy": 0.8949419436933355,
+        "unknown_accuracy": 0.5427400468384075
+      },
+      "greedy_test": {
+        "accuracy": 0.8777795488961505,
+        "unknown_accuracy": 0.5196599362380446
+      },
+      "viterbi_test": {
+        "accuracy": 0.9002550410456683,
+        "unknown_accuracy": 0.5350690754516472
+      }
+    },
+    "v2": {
+      "greedy_dev": {
+        "accuracy": 0.8945045331636711,
+        "unknown_accuracy": 0.7271662763466042
+      },
+      "viterbi_dev": {
+        "accuracy": 0.9155002385875617,
+        "unknown_accuracy": 0.7523419203747073
+      },
+      "greedy_test": {
+        "accuracy": 0.8990993863074839,
+        "unknown_accuracy": 0.7396386822529224
+      },
+      "viterbi_test": {
+        "accuracy": 0.9224117318881008,
+        "unknown_accuracy": 0.757173219978746
+      }
+    }
+  },
+  "smoothing_ablation": [
+    {
+      "k_emit": 0,
+      "sentences_without_valid_path": 0,
+      "accuracy": 0.9155002385875617,
+      "unknown_accuracy": 0.7523419203747073
+    },
+    {
+      "k_emit": 1e-06,
+      "sentences_without_valid_path": 0,
+      "accuracy": 0.9155002385875617,
+      "unknown_accuracy": 0.7523419203747073
+    },
+    {
+      "k_emit": 0.001,
+      "sentences_without_valid_path": 0,
+      "accuracy": 0.9155002385875617,
+      "unknown_accuracy": 0.7523419203747073
+    },
+    {
+      "k_emit": 0.1,
+      "sentences_without_valid_path": 0,
+      "accuracy": 0.9120804835374583,
+      "unknown_accuracy": 0.7464871194379391
+    },
+    {
+      "k_emit": 1,
+      "sentences_without_valid_path": 0,
+      "accuracy": 0.8873469063146174,
+      "unknown_accuracy": 0.734192037470726
+    },
+    {
+      "k_emit": 10,
+      "sentences_without_valid_path": 0,
+      "accuracy": 0.8049944329568952,
+      "unknown_accuracy": 0.7019906323185011
+    }
+  ],
+  "learning_curve": [
+    {
+      "fraction": 0.1,
+      "train_sentences": 1254,
+      "v1": 0.8328296484809925,
+      "v2": 0.8786384603149355
+    },
+    {
+      "fraction": 0.25,
+      "train_sentences": 3136,
+      "v1": 0.8641243836487991,
+      "v2": 0.8968904087800222
+    },
+    {
+      "fraction": 0.5,
+      "train_sentences": 6272,
+      "v1": 0.8843645617941784,
+      "v2": 0.9094957849530778
+    },
+    {
+      "fraction": 1.0,
+      "train_sentences": 12544,
+      "v1": 0.8949419436933355,
+      "v2": 0.9155002385875617
+    }
+  ],
+  "bootstrap_v2_minus_v1": {
+    "mean_diff": 0.02216798157650188,
+    "ci95_low": 0.019108315449427687,
+    "ci95_high": 0.025132902164667178,
+    "excludes_zero": true
+  }
+}
