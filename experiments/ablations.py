@@ -80,3 +80,14 @@ for name, model in [("v1", v1), ("v2", v2)]:
         "viterbi_test": evaluate(model.predict_many(test), test, model.train_words),
     }
     print(name, "greedy vs Viterbi:", results["greedy_vs_viterbi"][name])
+
+# ---------- 3. Smoothing ablation (dev set) ----------
+results["smoothing_ablation"] = []
+for k in [0, 1e-6, 1e-3, 1e-1, 1, 10]:
+    model = HMMTagger(shape_unk=True, k_emit=k).fit(train)
+    scored = [model.predict_with_score([w for w, _ in s]) for s in dev]
+    pred = [tags for tags, _ in scored]
+    no_path = sum(np.isneginf(score) for _, score in scored)     # sentences where every path had probability 0
+    row = {"k_emit": k, "sentences_without_valid_path": int(no_path), **evaluate(pred, dev, model.train_words)}
+    results["smoothing_ablation"].append(row)
+    print(row)
