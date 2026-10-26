@@ -55,3 +55,28 @@ results["mft_baseline"] = {
     "test": evaluate(mft_predict(test), test, v1.train_words),
 }
 print("MFT baseline:", results["mft_baseline"])
+
+# ---------- 2. Greedy decoding vs Viterbi ----------
+def greedy_predict(model, sentences):
+    """Left to right: pick the best tag at each word given only the previous predicted tag."""
+    out = []
+    for s in sentences:
+        ids = model.encode([w for w, _ in s])
+        prev, tags_out = model.start, []
+        for wid in ids:
+            t = int((model.log_A[prev, :model.n_tags] + model.log_B[:, wid]).argmax())
+            tags_out.append(model.tags[t])
+            prev = t
+        out.append(tags_out)
+    return out
+
+
+results["greedy_vs_viterbi"] = {}
+for name, model in [("v1", v1), ("v2", v2)]:
+    results["greedy_vs_viterbi"][name] = {
+        "greedy_dev": evaluate(greedy_predict(model, dev), dev, model.train_words),
+        "viterbi_dev": evaluate(model.predict_many(dev), dev, model.train_words),
+        "greedy_test": evaluate(greedy_predict(model, test), test, model.train_words),
+        "viterbi_test": evaluate(model.predict_many(test), test, model.train_words),
+    }
+    print(name, "greedy vs Viterbi:", results["greedy_vs_viterbi"][name])
