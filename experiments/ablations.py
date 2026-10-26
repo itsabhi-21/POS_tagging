@@ -111,6 +111,22 @@ plt.xlabel("Training data used (%)")
 plt.ylabel("Dev accuracy (%)")
 plt.title("Learning curve")
 plt.legend()
-plt.tight_layout()
 plt.savefig("figures/learning_curve.png", dpi=150)
 plt.close()
+
+# ---------- 5. Bootstrap confidence interval for v2 - v1 (test set) ----------
+def per_sentence_correct(model):
+    correct = np.array([sum(p == g for p, (_, g) in zip(model.predict([w for w, _ in s]), s)) for s in test])
+    return correct
+
+
+lengths = np.array([len(s) for s in test])
+c1, c2 = per_sentence_correct(v1), per_sentence_correct(v2)
+
+rng = np.random.default_rng(SEED)
+idx = rng.integers(0, len(test), size=(1000, len(test)))               # 1000 resamples of the test sentences
+diff = c2[idx].sum(axis=1) / lengths[idx].sum(axis=1) - c1[idx].sum(axis=1) / lengths[idx].sum(axis=1)
+lo, hi = np.percentile(diff, [2.5, 97.5])
+results["bootstrap_v2_minus_v1"] = {"mean_diff": float(diff.mean()), "ci95_low": float(lo), "ci95_high": float(hi),
+                                    "excludes_zero": bool(lo > 0 or hi < 0)}
+print(results["bootstrap_v2_minus_v1"])
