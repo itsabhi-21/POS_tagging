@@ -1,0 +1,27 @@
+{
+  "name": "lstm-bi-char-seed42",
+  "args": {
+    "encoder": "lstm",
+    "bidirectional": true,
+    "use_char": true,
+    "seed": 42,
+    "epochs": 2,
+    "patience": 100,
+    "batch_size": 32,
+    "lr": 0.001,
+    "hidden": 128,
+    "dropout": 0.33,
+    "word_dropout": 0.1,
+    "subset": 0,
+    "data_dir": "data",
+    "out_dir": "results/dl",
+    "eval_test": false
+  },
+  "best_dev_accuracy": 0.891800540798473,
+  "dev": {
+    "accuracy": 0.891800540798473,
+    "macro_f1": 0.8200073871054233,
+    "unknown_accuracy": 0.7365339578454333,
+    "n_unknown_tokens": 1708
+  }
+}

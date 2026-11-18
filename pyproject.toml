@@ -7,7 +7,7 @@ name = "hmm-tagger"
 version = "0.1.0"
 description = "HMM + Viterbi POS tagger for the UD English EWT treebank"
 requires-python = ">=3.9"
-dependencies = ["numpy", "conllu", "scikit-learn"]
+dependencies = ["numpy", "conllu", "scikit-learn", "torch"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

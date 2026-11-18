@@ -4,6 +4,7 @@ __pycache__/
 *.pt
 scratch_test.py
 .DS_Store
-# Python / tooling caches
 *.pyc
 .pytest_cache/
+_ppt_build/
+.chart-data-*/
