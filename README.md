@@ -5,10 +5,21 @@
 [![Universal Dependencies](https://img.shields.io/badge/UD-English_EWT_v2.18-green.svg)](https://github.com/UniversalDependencies/UD_English-EWT)
 
 A controlled comparative study of sequence tagging algorithms on the Universal Dependencies (UD) English Web Treebank (EWT). This project evaluates and contrasts:
-1. **Phase 1 (Applied Machine Learning):** A first-order generative **Hidden Markov Model (HMM)** with Laplace emission smoothing and orthographic shape buckets, decoded globally via **Viterbi** in log-space.
+1. **Phase 1 (Applied Machine Learning):** A first-order generative **Hidden Markov Model (HMM)** with Laplace emission smoothing and hand-crafted orthographic shape buckets, decoded globally via **Viterbi** in log-space.
 2. **Phase 2 (Deep Learning):** A discriminative **Bidirectional LSTM (BiLSTM)** tagger combining learned word embeddings with a character-level **1D Convolutional Neural Network (CNN)** for automated subword morphology extraction.
 
-Both phases share an identical evaluation protocol: the same data splits, identical 17 Universal POS (UPOS) tags, the same definition of an unknown word, and unified scoring functions.
+Both phases share an identical evaluation protocol: the exact same data splits, identical 17 Universal POS (UPOS) tags, the same definition of an unknown word, and unified scoring functions.
+
+---
+
+## Features
+
+- **Generative Sequence Modeling:** First-order HMM with log-space Viterbi dynamic programming.
+- **Orthographic Handling:** 11 hand-crafted shape buckets for OOV words (capitalization, hyphens, numbers, affixes).
+- **Deep Recurrent Tagging:** Single-layer BiLSTM (256 hidden units per direction) condition on unbounded bidirectional context.
+- **Subword Convolution:** 1D character-level CNN (50 filters, kernel size 3) to automatically learn morphological patterns.
+- **Regularization & Early Stopping:** Word dropout ($p=0.10$), standard dropout ($p=0.33$), and validation accuracy early stopping (patience 5).
+- **Automated Test Suite:** 34 unit and regression tests with `pytest` integrated into GitHub Actions CI.
 
 ---
 
@@ -24,13 +35,13 @@ Evaluated across **25,094 tokens** (including **1,882 unknown tokens**, 7.50% OO
 | **BiLSTM (Word-Only)** | 92.32 ± 0.17% | 86.56 ± 0.21% | 55.15 ± 0.72% | ≈ 95.33% |
 | **BiLSTM (Word + Char CNN, Final)** | **95.33 ± 0.17%** | **91.57 ± 0.42%** | **81.40 ± 0.66%** | **≈ 96.46%** |
 
-> *BiLSTM metrics report mean ± standard deviation over 5 random seeds (seeds 1–5); full metrics stored in `results/dl_ablations.json`.*
+> *BiLSTM metrics report mean ± standard deviation over 5 random seeds (seeds 1–5); complete serialized metrics reside in `results/dl_ablations.json`.*
 
 ### Key Empirical Findings
 - **Overall Improvement:** The word + character BiLSTM outperforms the tuned HMM baseline by **+3.09 percentage points** in token accuracy, **+6.04 points** in macro F1, and **+5.68 points** on unknown words.
 - **The Ablation Paradox:** A word-only BiLSTM matches the HMM in aggregate accuracy (92.32% vs. 92.24%), but masks two opposing shifts: bidirectional context reduces known-word errors by ~406 tokens, while the absence of subword features causes unknown-word errors to nearly double (457 → 844).
 - **The Character CNN Advantage:** Adding the 1D character CNN ($k=3$, 50 filters) recovers roughly **+26.25 percentage points** on unknown tokens without manual feature engineering, while shaving another 262 known-word errors by recovering casing information.
-- **Error Reduction on Syntax:** Bidirectional lookahead eliminates common HMM function-word confusions such as `VERB → AUX` (104 down to ≤32) and `SCONJ → ADP` (63 down to ≤32). The remaining error budget is dominated by nominal capitalization ambiguity (`PROPN ↔ NOUN`).
+- **Syntactic Disambiguation:** Bidirectional lookahead eliminates common HMM function-word confusions such as `VERB → AUX` (104 down to ≤32) and `SCONJ → ADP` (63 down to ≤32). The remaining error budget is dominated by nominal capitalization ambiguity (`PROPN ↔ NOUN`).
 
 ---
 
@@ -68,6 +79,7 @@ POS_tagging/
 │   └── DL_Project.ipynb                # Phase 2 notebook (BiLSTM training & tuning)
 ├── ppt/                                # Presentation slides
 │   └── presentation.pdf
+├── output/                             # Generated slide decks (.pptx and .pdf)
 ├── reports/                            # Final project reports
 │   ├── AML_Phase1_Final_Report.docx    # Phase 1 report
 │   ├── DL_Phase2_Final_Report.docx     # Phase 2 report (IEEE format, editable)
@@ -87,7 +99,7 @@ POS_tagging/
 │       ├── dataset.py                  # Padded tensor batching
 │       ├── run.py                      # Experiment CLI runner
 │       └── train.py                    # Training loop with word dropout & early stopping
-├── tests/                              # Pytest test suite (14 unit & regression tests)
+├── tests/                              # Pytest test suite (34 unit & regression tests)
 ├── requirements.txt                    # Python dependencies
 └── pyproject.toml
 ```
@@ -165,12 +177,16 @@ python experiments/BiLSTM/bilstm_ablations.py
 ```
 *Outputs: `results/dl_ablations.json`.*
 
-### Running Automated Tests
+---
+
+## Running Automated Tests
+
+Run the full suite of 34 unit and regression tests:
 ```bash
 python -m pytest -v
 ```
 
-Skip slow end-to-end regression tests during quick development:
+Skip slow end-to-end regression tests during rapid local development:
 ```bash
 python -m pytest -m "not slow"
 ```
