@@ -26,4 +26,8 @@ def unseen_mask(sentences, train_words, lowercase=True):
 
 
 def unknown_word_accuracy(gold, pred, mask):
+    """Accuracy on the tokens selected by mask; NaN if there are none."""
+    mask = np.asarray(mask, dtype=bool)
+    if not mask.any():
+        return float("nan")
     return float((_flat(gold) == _flat(pred))[mask].mean())

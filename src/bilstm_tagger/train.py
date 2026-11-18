@@ -1,5 +1,8 @@
 # src/bilstm_tagger/train.py
-import random, json
+import json
+import os
+import random
+
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -31,12 +34,13 @@ def run_epoch(model, batches, device, optimizer=None):
             correct += ((logits.argmax(-1) == tags) & mask).sum().item()
             count += mask.sum().item()
             loss_sum += loss.item()
-    return loss_sum / max(len(batches), 1), correct / count
+    return loss_sum / max(len(batches), 1), correct / max(count, 1)
 
 
 def fit(model, train_batches_fn, dev_batches, device,
         epochs=30, lr=1e-3, patience=4, ckpt="results/bilstm_best.pt"):
     model.to(device)
+    os.makedirs(os.path.dirname(ckpt) or ".", exist_ok=True)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     best, bad = 0.0, 0
     for ep in range(1, epochs + 1):
@@ -50,13 +54,13 @@ def fit(model, train_batches_fn, dev_batches, device,
             bad += 1
             if bad >= patience:
                 print("early stop"); break
-    model.load_state_dict(torch.load(ckpt))
+    model.load_state_dict(torch.load(ckpt, map_location=device))
     return best
 
 
 @torch.no_grad()
 def predict(model, batches, device, id2tag):
-    """Returns list[list[str]], yahi format P3/P4 ko chahiye."""
+    """Return predicted tags as list[list[str]] (same format as the HMM tagger)."""
     model.eval()
     preds = []
     for b in batches:

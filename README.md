@@ -24,7 +24,7 @@ Evaluated across **25,094 tokens** (including **1,882 unknown tokens**, 7.50% OO
 | **BiLSTM (Word-Only)** | 92.32 ± 0.17% | 86.56 ± 0.21% | 55.15 ± 0.72% | ≈ 95.33% |
 | **BiLSTM (Word + Char CNN, Final)** | **95.33 ± 0.17%** | **91.57 ± 0.42%** | **81.40 ± 0.66%** | **≈ 96.46%** |
 
-> *BiLSTM metrics report mean ± standard deviation over 5 random seeds (seeds 1–5).*
+> *BiLSTM metrics report mean ± standard deviation over 5 random seeds (seeds 1–5); full metrics stored in `results/dl_ablations.json`.*
 
 ### Key Empirical Findings
 - **Overall Improvement:** The word + character BiLSTM outperforms the tuned HMM baseline by **+3.09 percentage points** in token accuracy, **+6.04 points** in macro F1, and **+5.68 points** on unknown words.
@@ -43,7 +43,8 @@ POS_tagging/
 │   ├── en_ewt-ud-dev.conllu
 │   └── en_ewt-ud-test.conllu
 ├── docs/                               # Detailed ablation analysis & guides
-│   └── ablations.md
+│   ├── ablations.md
+│   └── MEMBER2_VIVA_GUIDE.md
 ├── experiments/                        # Reproducible ablation experiment scripts
 │   ├── POS_tagger/
 │   │   └── ablations.py                # HMM baselines, smoothing, learning curves
@@ -65,6 +66,8 @@ POS_tagging/
 ├── notebooks/                          # Interactive experiment notebooks
 │   ├── HMM_POS_tagger.ipynb            # Phase 1 notebook
 │   └── DL_Project.ipynb                # Phase 2 notebook (BiLSTM training & tuning)
+├── ppt/                                # Presentation slides
+│   └── presentation.pdf
 ├── reports/                            # Final project reports
 │   ├── AML_Phase1_Final_Report.docx    # Phase 1 report
 │   ├── DL_Phase2_Final_Report.docx     # Phase 2 report (IEEE format, editable)
@@ -80,8 +83,12 @@ POS_tagging/
 │   │   └── data.py                     # CoNLL-U parsing and caching
 │   └── bilstm_tagger/                  # Modular BiLSTM package
 │       ├── model.py                    # BiLSTM + Char-CNN PyTorch architecture
+│       ├── vocab.py                    # Vocabulary & char mapping
+│       ├── dataset.py                  # Padded tensor batching
+│       ├── run.py                      # Experiment CLI runner
 │       └── train.py                    # Training loop with word dropout & early stopping
-├── tests/                              # Pytest test suite
+├── tests/                              # Pytest test suite (14 unit & regression tests)
+├── requirements.txt                    # Python dependencies
 └── pyproject.toml
 ```
 
@@ -98,11 +105,7 @@ cd POS_tagging
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
-```
-
-To run deep learning experiments, install PyTorch:
-```bash
-pip install torch
+pip install -r requirements.txt
 ```
 
 ---
@@ -164,7 +167,12 @@ python experiments/BiLSTM/bilstm_ablations.py
 
 ### Running Automated Tests
 ```bash
-pytest -v
+python -m pytest -v
+```
+
+Skip slow end-to-end regression tests during quick development:
+```bash
+python -m pytest -m "not slow"
 ```
 
 ---
