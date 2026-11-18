@@ -1,2 +1,0 @@
-bilstm_tagger
-hmm_tagger

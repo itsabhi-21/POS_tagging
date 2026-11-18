@@ -4,3 +4,4 @@ __pycache__/
 *.pt
 scratch_test.py
 .DS_Store
+.pytest_cache/
