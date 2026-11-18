@@ -3,3 +3,4 @@ conllu
 scikit-learn
 pytest
 matplotlib
+torch

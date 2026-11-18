@@ -2,7 +2,7 @@
 
 This document presents experimental evidence and analysis comparing the HMM POS tagger variants (HMM v1 without word shapes vs. HMM v2 with word shape features) against a baseline and examining the impact of decoding strategies, smoothing parameters, training data scale, and statistical significance.
 
-All experiments were executed via `experiments/ablations.py`, and the complete quantitative results are serialized in `results/ablations.json`.
+All experiments were executed via `experiments/POS_tagger/ablations.py`, and the complete quantitative results are serialized in `results/ablations.json`.
 
 ---
 

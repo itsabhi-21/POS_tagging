@@ -1,6 +1,6 @@
 """Baselines and ablations for the HMM POS tagger.
 
-Run from the repository root:  python experiments/ablations.py
+Run from the repository root:  python experiments/POS_tagger/ablations.py
 """
 import json
 import random
