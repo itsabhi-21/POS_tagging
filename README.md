@@ -125,23 +125,23 @@ print(list(zip(sentence, tags)))
 # Output: [('The', 'DET'), ('movie', 'NOUN'), ('was', 'AUX'), ('really', 'ADV'), ('good', 'ADJ')]
 ```
 
-### 2. Using the BiLSTM Tagger (Phase 2)
-```python
-import torch
-from bilstm_tagger.model import BiLSTMTagger
+### 2. Running BiLSTM Training & Experiments (`run.py`)
 
-# Initialize model (word embeddings + character-level 1D CNN)
-model = BiLSTMTagger(
-    n_words=8867,
-    n_chars=110,
-    n_tags=17,
-    word_dim=100,
-    char_dim=30,
-    char_filters=50,
-    hidden=256,
-    dropout=0.33,
-    use_char=True
-)
+Run individual experiments, ablations, or evaluation passes directly via the CLI runner:
+
+```bash
+# 1. Train final BiLSTM tagger (Word + Char CNN) on full data and evaluate test set:
+python -m bilstm_tagger.run --hidden 256 --dropout 0.33 --lr 0.001 --epochs 40 --patience 5 --seed 1 --eval_test --out_dir results/dl
+
+# 2. Word-only ablation (removes Character CNN branch):
+python -m bilstm_tagger.run --hidden 256 --dropout 0.33 --lr 0.001 --no-use_char --seed 1 --eval_test --out_dir results/dl
+
+# 3. Architectural variants (e.g. standard RNN, GRU, or Conv1D sequence encoder):
+python -m bilstm_tagger.run --encoder gru --bidirectional --use_char --seed 1
+python -m bilstm_tagger.run --encoder cnn --use_char --seed 1
+
+# 4. Pipeline integrity check (overfit a 200-sentence subset to 100% accuracy):
+python -m bilstm_tagger.run --subset 200 --epochs 30 --patience 100 --lr 1e-2 --dropout 0 --word_dropout 0
 ```
 
 ---
